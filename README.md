@@ -9,7 +9,8 @@ Our paper from NDSS'23 explains the protocol and receiver design: [Drone Securit
 > If you're looking for the fuzzer, we will upload that shortly :)
 
 The live receiver was tested with:
-* Ettus USRP B205-mini
+* Ettus USRP B205-mini (UHD-based receiver)
+* **Analog Devices PlutoSDR (pyadi-iio-based receiver - NEW!)**
 * DJI mini 2, DJI Mavic Air 2
 
 Our software is a proof-of-concept receiver that we used to reverse-engineer an unknown protocol. Hence, it is not optimized for bad RF conditions, performance, or range.
@@ -107,7 +108,23 @@ App Coordinates:
 (51.44620788045814, 7.267101350460944)
 ```
 
-# Live Receiver
+# Live Receiver (PlutoSDR - NEW!)
+
+**NEW:** We now support Analog Devices PlutoSDR! See [README_PLUTOSDR.md](README_PLUTOSDR.md) for detailed setup instructions.
+
+Quick start with PlutoSDR:
+```bash
+pip3 install -r requirements.txt
+./src/droneid_receiver_pluto.py
+```
+
+PlutoSDR advantages:
+* Affordable (~$150 vs $700 for USRP)
+* Works with 2.4 GHz band out of box
+* Can be extended to 5.8 GHz with AD9364 mode
+* Includes onboard Zynq 7000 for standalone operation
+
+# Live Receiver (USRP - Original)
 
 The live receiver additionally requires the UHD driver and **quite powerful machines** (for captures at 50 MHz bandwidth).
 
