@@ -43,6 +43,17 @@ include_directories(${CMAKE_SOURCE_DIR}/include)
 set(COMMON_SOURCES
     src/common.c
     src/dsp_neon.c
+    src/spectrum_capture.c
+    src/packet.c
+    src/qpsk.c
+    src/turbo.c
+    src/droneid_packet.c
+    src/threading.c
+)
+
+# PlutoSDR sources (optional, requires libiio)
+set(PLUTO_SOURCES
+    src/pluto_iio.c
 )
 
 # Find dependencies
@@ -80,11 +91,21 @@ if(ENABLE_LIBIIO)
 endif()
 
 # Main library
-add_library(droneid ${COMMON_SOURCES})
+if(ENABLE_LIBIIO AND IIO_LIBRARY)
+    add_library(droneid ${COMMON_SOURCES} ${PLUTO_SOURCES})
+else()
+    add_library(droneid ${COMMON_SOURCES})
+endif()
+
 target_link_libraries(droneid ${EXTRA_LIBS} ${LIBM} ${CMAKE_THREAD_LIBS_INIT})
 
+# Main executable
+add_executable(droneid_receiver src/main.c)
+target_link_libraries(droneid_receiver droneid ${EXTRA_LIBS} ${LIBM} ${CMAKE_THREAD_LIBS_INIT})
+
 # Installation
-install(TARGETS droneid
+install(TARGETS droneid droneid_receiver
+    RUNTIME DESTINATION bin
     LIBRARY DESTINATION lib
     ARCHIVE DESTINATION lib
 )
