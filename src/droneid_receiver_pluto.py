@@ -367,9 +367,19 @@ Examples:
     try:
         sdr = adi.Pluto(uri=args.uri)
         print(f"Connected to PlutoSDR")
-        print(f"  Hardware: {sdr._ctrl.find_device('ad9361-phy').attrs['model'].value}")
-        print(f"  Firmware: {sdr._ctx.attrs['fw_version'].value}")
-        print(f"  Serial: {sdr._ctx.attrs['serial'].value if 'serial' in sdr._ctx.attrs else 'N/A'}")
+
+        # Try to get device info if available
+        try:
+            if hasattr(sdr, '_ctx') and sdr._ctx:
+                ctx_attrs = sdr._ctx.attrs
+                if 'fw_version' in ctx_attrs:
+                    print(f"  Firmware: {ctx_attrs['fw_version'].value}")
+                if 'hw_model' in ctx_attrs:
+                    print(f"  Hardware: {ctx_attrs['hw_model'].value}")
+        except:
+            # If we can't get device info, just continue
+            pass
+
     except Exception as e:
         print(f"Error connecting to PlutoSDR: {e}")
         print("Make sure PlutoSDR is connected and accessible at the specified URI")
